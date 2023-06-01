@@ -1,0 +1,8 @@
+fastapi
+python-dotenv
+argon2-cffi
+tortoise-orm[accel,asyncpg]
+pydantic
+pyjwt
+uvicorn
+schema
