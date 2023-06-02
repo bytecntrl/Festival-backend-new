@@ -25,7 +25,19 @@ def init_db(app: FastAPI):
             "apps": {
                 "models": {
                     "models": [
+                        "backend.database.models.ingredient_order",
+                        "backend.database.models.ingredients",
+                        "backend.database.models.menu",
+                        "backend.database.models.menu_order",
+                        "backend.database.models.menu_product",
+                        "backend.database.models.orders",
+                        "backend.database.models.product_order",
+                        "backend.database.models.products",
+                        "backend.database.models.role_menu",
+                        "backend.database.models.role_product",
+                        "backend.database.models.subcategories",
                         "backend.database.models.users",
+                        "backend.database.models.variant",
                     ],
                     "default_connection": "default",
                 }

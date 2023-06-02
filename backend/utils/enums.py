@@ -14,3 +14,8 @@ class Roles(enum.StrEnum):
     @classmethod
     def roles(cls):
         return [x for x in cls._value2member_map_ if x != "admin"]
+
+
+class Category(enum.StrEnum):
+    FOODS = "foods"
+    DRINKS = "drinks"

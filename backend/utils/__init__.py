@@ -1,3 +1,3 @@
-__all__ = ("Roles",)
+__all__ = ("Category", "Roles")
 
-from .enums import Roles
+from .enums import Category, Roles
