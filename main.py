@@ -1,10 +1,16 @@
+import secrets
+import string
+
+from argon2 import PasswordHasher
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from backend.config import Config, Session
 from backend.database import init_db
+from backend.database.models import Users
 from backend.responses.error import UnicornException
 from backend.routers import auth
 
@@ -47,3 +53,36 @@ async def unicorn_exception_handler(_: Request, exc: UnicornException):
     return JSONResponse(
         status_code=exc.status, content={"error": True, "message": exc.message}
     )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(
+    _: Request, exc: RequestValidationError
+):
+    detail = exc.errors()
+
+    return JSONResponse(
+        status_code=422,
+        content={
+            "error": True,
+            "message": "Request Validation Error",
+            "detail": detail,
+        },
+    )
+
+
+# creation admin user if not exist
+@app.on_event("startup")
+async def startup_event():
+    if not await Users.filter(role="admin").exists():
+        alphabet = string.ascii_letters + string.digits
+        password = "".join(secrets.choice(alphabet) for _ in range(8))
+
+        ph = PasswordHasher()
+
+        await Users(
+            username="admin", password=ph.hash(password), role="admin"
+        ).save()
+
+        print("Username: admin")
+        print("Password:", password)

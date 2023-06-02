@@ -10,5 +10,5 @@ class UnicornException(Exception):
 class InvalidUsernameOrPassword(UnicornException):
     def __init__(self):
         super().__init__(
-            status.HTTP_404_NOT_FOUND, "Invalid username or password"
+            status.HTTP_401_UNAUTHORIZED, "Invalid username or password"
         )
