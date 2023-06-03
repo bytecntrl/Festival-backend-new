@@ -1,13 +1,10 @@
 from argon2 import PasswordHasher
-from argon2.exceptions import (
-    HashingError,
-    InvalidHash,
-    VerificationError,
-    VerifyMismatchError,
-)
+from argon2.exceptions import (HashingError, InvalidHash, VerificationError,
+                               VerifyMismatchError)
 from fastapi import APIRouter
 
 from backend.database.models import Users
+from backend.responses.auth import LoginResponse
 from backend.responses.error import InvalidUsernameOrPassword
 from backend.utils import TokenJwt, encode_jwt
 
@@ -30,4 +27,4 @@ async def login(username: str, password: str):
 
     payload = TokenJwt(username, user["role"])
 
-    return {"error": False, "message": "", "token": encode_jwt(payload)}
+    return LoginResponse(token=encode_jwt(payload))
