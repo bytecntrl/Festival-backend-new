@@ -1,6 +1,10 @@
 from argon2 import PasswordHasher
-from argon2.exceptions import (HashingError, InvalidHash, VerificationError,
-                               VerifyMismatchError)
+from argon2.exceptions import (
+    HashingError,
+    InvalidHash,
+    VerificationError,
+    VerifyMismatchError,
+)
 from fastapi import APIRouter
 
 from backend.database.models import Users
