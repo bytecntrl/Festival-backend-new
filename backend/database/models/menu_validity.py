@@ -7,7 +7,7 @@ class MenuValidity(Model):
     The MenuValidity model
     """
 
-    product = fields.ForeignKeyField("models.Products")
+    menu = fields.ForeignKeyField("models.Menu")
     start_date = fields.DateField()
     end_date = fields.DateField()
 
