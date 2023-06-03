@@ -10,6 +10,7 @@ class IngredientOrder(Model):
     ingredient = fields.ForeignKeyField("models.Ingredients")
     product = fields.ForeignKeyField("models.ProductOrder")
     order = fields.ForeignKeyField("models.Orders")
+    price = fields.FloatField()
 
     class Meta:
         table = "ingredient_order"

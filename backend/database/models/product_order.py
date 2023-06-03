@@ -7,8 +7,9 @@ class ProductOrder(Model):
     The ProductOrder model
     """
 
-    menu = fields.ForeignKeyField("models.MenuOrder", null=True)
+    menu = fields.ForeignKeyField("models.Menu", null=True)
     product = fields.ForeignKeyField("models.Products")
+    price = fields.FloatField()
     variant = fields.ForeignKeyField("models.Variant", null=True)
     order = fields.ForeignKeyField("models.Orders")
 

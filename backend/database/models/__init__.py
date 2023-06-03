@@ -2,10 +2,11 @@ __all__ = (
     "IngredientOrder",
     "Ingredients",
     "Menu",
-    "MenuOrder",
     "MenuProduct",
+    "MenuValidity",
     "Orders",
     "ProductOrder",
+    "ProductValidity",
     "Products",
     "RoleMenu",
     "RoleProduct",
@@ -17,10 +18,11 @@ __all__ = (
 from .ingredient_order import IngredientOrder
 from .ingredients import Ingredients
 from .menu import Menu
-from .menu_order import MenuOrder
 from .menu_product import MenuProduct
+from .menu_validity import MenuValidity
 from .orders import Orders
 from .product_order import ProductOrder
+from .product_validity import ProductValidity
 from .products import Products
 from .role_menu import RoleMenu
 from .role_product import RoleProduct

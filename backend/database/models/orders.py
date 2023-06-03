@@ -7,12 +7,12 @@ class Orders(Model):
     The Orders model
     """
 
-    client = fields.CharField(20)
-    person = fields.IntField(null=True)
+    customer = fields.CharField(20)
+    guests = fields.IntField(null=True)
     take_away = fields.BooleanField()
     table = fields.IntField(null=True)
     user = fields.ForeignKeyField("models.Users")
-    time = fields.DatetimeField(auto_now=True)
+    created_at = fields.DatetimeField(auto_now=True)
 
     class Meta:
         table = "orders"
