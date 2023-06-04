@@ -2,6 +2,7 @@ import dataclasses
 import datetime
 
 import jwt
+from fastapi import Header
 from jwt.exceptions import (
     DecodeError,
     ExpiredSignatureError,
@@ -14,6 +15,7 @@ from jwt.exceptions import (
 )
 
 from backend.config import Session
+from backend.responses.error import Unauthorized
 
 
 @dataclasses.dataclass
@@ -54,3 +56,22 @@ def decode_jwt(token: str) -> TokenJwt | None:
         MissingRequiredClaimError,
     ):
         return None
+
+
+async def validate_token(access_token: str = Header(alias="Authorization")):
+    try:
+        token = access_token.split("Bearer ")[1]
+
+        return decode_jwt(token)
+    except (
+        InvalidTokenError,
+        DecodeError,
+        InvalidSignatureError,
+        ExpiredSignatureError,
+        InvalidIssuedAtError,
+        InvalidKeyError,
+        InvalidAlgorithmError,
+        MissingRequiredClaimError,
+        IndexError,
+    ):
+        raise Unauthorized("Invalid JWT token")

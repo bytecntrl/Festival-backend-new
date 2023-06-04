@@ -1,4 +1,11 @@
-__all__ = ("Category", "Roles", "TokenJwt", "decode_jwt", "encode_jwt")
+__all__ = (
+    "Category",
+    "Roles",
+    "TokenJwt",
+    "decode_jwt",
+    "encode_jwt",
+    "validate_token",
+)
 
 from .enums import Category, Roles
-from .token_jwt import TokenJwt, decode_jwt, encode_jwt
+from .token_jwt import TokenJwt, decode_jwt, encode_jwt, validate_token

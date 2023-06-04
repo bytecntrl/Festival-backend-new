@@ -5,3 +5,8 @@ class LoginResponse(BaseModel):
     error: bool = False
     message: str = ""
     token: str
+
+
+class RegisterResponse(BaseModel):
+    error: bool = False
+    message: str = ""
