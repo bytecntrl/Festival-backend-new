@@ -1,5 +1,6 @@
 import secrets
 import string
+import sys
 
 from argon2 import PasswordHasher
 from dotenv import load_dotenv
@@ -7,12 +8,23 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from loguru import logger
 
 from backend.config import Config, Session
 from backend.database import init_db
 from backend.database.models import Users
 from backend.responses.error import UnicornException
 from backend.routers import auth
+
+FMT = "<green>[{time}]</green> | <level>{level}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
+
+# logger
+logger.configure(
+    handlers=[
+        {"sink": sys.stdout, "format": FMT},
+        {"sink": "log.log", "format": FMT},
+    ]
+)
 
 app = FastAPI()
 
@@ -84,5 +96,4 @@ async def startup_event():
             username="admin", password=ph.hash(password), role="admin"
         ).save()
 
-        print("Username: admin")
-        print("Password:", password)
+        logger.info(f"Created the admin user with password {password}")

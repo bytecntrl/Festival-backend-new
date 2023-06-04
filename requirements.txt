@@ -6,3 +6,4 @@ pydantic
 pyjwt
 uvicorn
 schema
+loguru
