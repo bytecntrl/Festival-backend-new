@@ -1,12 +1,5 @@
-from pydantic import BaseModel
+from backend.responses import BaseResponse
 
 
-class LoginResponse(BaseModel):
-    error: bool = False
-    message: str = ""
+class LoginResponse(BaseResponse):
     token: str
-
-
-class RegisterResponse(BaseModel):
-    error: bool = False
-    message: str = ""

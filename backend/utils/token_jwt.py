@@ -60,18 +60,11 @@ def decode_jwt(token: str) -> TokenJwt | None:
 
 async def validate_token(access_token: str = Header(alias="Authorization")):
     try:
-        token = access_token.split("Bearer ")[1]
+        token = decode_jwt(access_token.split("Bearer ")[1])
 
-        return decode_jwt(token)
-    except (
-        InvalidTokenError,
-        DecodeError,
-        InvalidSignatureError,
-        ExpiredSignatureError,
-        InvalidIssuedAtError,
-        InvalidKeyError,
-        InvalidAlgorithmError,
-        MissingRequiredClaimError,
-        IndexError,
-    ):
+        if not token:
+            raise Unauthorized("Invalid JWT token")
+
+        return token
+    except IndexError:
         raise Unauthorized("Invalid JWT token")

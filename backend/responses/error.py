@@ -1,10 +1,6 @@
 from fastapi import status
 
-
-class UnicornException(Exception):
-    def __init__(self, status: int, message: str):
-        self.status = status
-        self.message = message
+from backend.responses import UnicornException
 
 
 class BadRequest(UnicornException):

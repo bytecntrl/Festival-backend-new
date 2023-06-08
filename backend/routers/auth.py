@@ -10,10 +10,11 @@ from pydantic import BaseModel
 from tortoise.exceptions import IntegrityError
 
 from backend.database.models import Users
-from backend.responses.auth import LoginResponse, RegisterResponse
+from backend.decorators import check_role
+from backend.responses import BaseResponse
+from backend.responses.auth import LoginResponse
 from backend.responses.error import BadRequest, Conflict, Unauthorized
 from backend.utils import Roles, TokenJwt, encode_jwt, validate_token
-from backend.decorators import check_role
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -74,4 +75,4 @@ async def register(
     except IntegrityError:
         raise Conflict("User alredy exists")
 
-    return RegisterResponse()
+    return BaseResponse()
