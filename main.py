@@ -14,7 +14,7 @@ from backend.config import Config, Session
 from backend.database import init_db
 from backend.database.models import Users
 from backend.responses.error import UnicornException
-from backend.routers import auth, subcategories
+from backend.routers import auth, subcategories, users
 
 FMT = "<green>[{time}]</green> | <level>{level}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
 
@@ -54,6 +54,7 @@ app.add_middleware(
 # routers
 app.include_router(auth.router)
 app.include_router(subcategories.router)
+app.include_router(users.router)
 
 
 # db
