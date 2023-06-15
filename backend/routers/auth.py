@@ -11,8 +11,7 @@ from tortoise.exceptions import IntegrityError
 
 from backend.database.models import Users
 from backend.decorators import check_role
-from backend.responses import BaseResponse
-from backend.responses.auth import LoginResponse
+from backend.responses.auth import LoginResponse, RegisterResponse
 from backend.responses.error import BadRequest, Conflict, Unauthorized
 from backend.utils import Roles, TokenJwt, encode_jwt, validate_token
 
@@ -75,4 +74,4 @@ async def register(
     except IntegrityError:
         raise Conflict("User alredy exists")
 
-    return BaseResponse()
+    return RegisterResponse(user=await user.to_dict())
