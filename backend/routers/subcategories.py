@@ -1,3 +1,5 @@
+import math
+
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from tortoise.exceptions import IntegrityError
@@ -6,7 +8,10 @@ from backend.database.models import Subcategories
 from backend.decorators import check_role
 from backend.responses import BaseResponse
 from backend.responses.error import BadRequest, Conflict
-from backend.responses.subcategories import GetSubcategoriesResponse
+from backend.responses.subcategories import (
+    GetSubcategoriesResponse,
+    GetSubcategoriesListResponse,
+)
 from backend.utils import Roles, TokenJwt, validate_token
 
 router = APIRouter(prefix="/subcategories", tags=["subcategories"])
@@ -14,10 +19,21 @@ router = APIRouter(prefix="/subcategories", tags=["subcategories"])
 
 # all: get subcategories
 @router.get("/")
-async def get_subcategories(token: TokenJwt = Depends(validate_token)):
-    categories = await Subcategories.all().order_by("order").values()
+async def get_subcategories(
+    page: int, token: TokenJwt = Depends(validate_token)
+):
+    categories = Subcategories.all()
+    categories_list = (
+        await categories.offset((page - 1) * 10)
+        .limit(10)
+        .order_by("order")
+        .values()
+    )
 
-    return GetSubcategoriesResponse(categories=categories)
+    return GetSubcategoriesResponse(
+        categories=categories_list,
+        pages=math.ceil(await categories.count() / 10),
+    )
 
 
 # all: get list subcategories
@@ -25,7 +41,7 @@ async def get_subcategories(token: TokenJwt = Depends(validate_token)):
 async def get_list_subcategories(token: TokenJwt = Depends(validate_token)):
     categories = [x["name"] for x in await Subcategories.all().values()]
 
-    return GetSubcategoriesResponse(categories=categories)
+    return GetSubcategoriesListResponse(categories=categories)
 
 
 class AddSubcategoriesItem(BaseModel):
