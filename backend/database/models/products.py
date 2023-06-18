@@ -10,6 +10,8 @@ class Products(Model):
     """
 
     name = fields.CharField(30, unique=True)
+    short_name = fields.CharField(15, unique=True)
+    is_priority = fields.BooleanField()
     price = fields.FloatField()
     category = fields.CharEnumField(Category)
     subcategory = fields.ForeignKeyField("models.Subcategories")
