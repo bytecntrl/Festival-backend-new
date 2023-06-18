@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, validator
 from tortoise.exceptions import IntegrityError
 
 from backend.database.models import Products, Subcategories
@@ -15,12 +15,29 @@ class AddProductItem(BaseModel):
     name: str
     short_name: str
     is_priority: bool
-    price: float
+    price: float = Field(ge=0)
     category: Category
     subcategory: int
 
+    @validator("name")
+    def validate_name_length(cls, name):
+        if len(name) > 30:
+            raise ValueError(
+                "The 'name' field must have a maximum length of 30 characters."
+            )
+        return name
+
+    @validator("short_name")
+    def validate_short_name_length(cls, short_name):
+        if len(short_name) > 15:
+            raise ValueError(
+                "The 'short_name' field must have a maximum length of 15 characters."
+            )
+        return short_name
+
     class Config:
         smart_union = True
+        strict = True
 
 
 # admin: add product
@@ -29,15 +46,6 @@ class AddProductItem(BaseModel):
 async def add_product(
     item: AddProductItem, token: TokenJwt = Depends(validate_token)
 ):
-    if not item.name or len(item.name) >= 30:
-        raise BadRequest("Wrong name")
-
-    if not item.short_name or len(item.short_name) >= 15:
-        raise BadRequest("Wrong short_name")
-
-    if item.price <= 0:
-        raise BadRequest("Wrong price")
-
     try:
         s = await Subcategories.get_or_none(id=item.subcategory)
         if not s:
