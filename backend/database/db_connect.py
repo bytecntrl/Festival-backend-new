@@ -1,7 +1,15 @@
+import re
+
 from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
 
 from backend.config import Session
+from backend.database import models
+
+
+def is_snake_case(string):
+    pattern = r"^[a-z]+(_[a-z]+)*$"
+    return bool(re.match(pattern, string))
 
 
 def init_db(app: FastAPI):
@@ -24,22 +32,12 @@ def init_db(app: FastAPI):
             },
             "apps": {
                 "models": {
-                    "models": [
-                        "backend.database.models.ingredient_order",
-                        "backend.database.models.ingredients",
-                        "backend.database.models.menu",
-                        "backend.database.models.menu_product",
-                        "backend.database.models.menu_validity",
-                        "backend.database.models.orders",
-                        "backend.database.models.product_order",
-                        "backend.database.models.product_validity",
-                        "backend.database.models.products",
-                        "backend.database.models.role_menu",
-                        "backend.database.models.role_product",
-                        "backend.database.models.subcategories",
-                        "backend.database.models.users",
-                        "backend.database.models.variant",
-                    ],
+                    "models": list(
+                        map(
+                            lambda x: f"backend.database.models.{x}",
+                            filter(lambda x: is_snake_case(x), dir(models)),
+                        )
+                    ),
                     "default_connection": "default",
                 }
             },

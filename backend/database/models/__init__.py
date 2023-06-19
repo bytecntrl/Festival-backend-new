@@ -10,6 +10,7 @@ __all__ = (
     "Products",
     "RoleMenu",
     "RoleProduct",
+    "Roles",
     "Subcategories",
     "Users",
     "Variant",
@@ -26,6 +27,7 @@ from .product_validity import ProductValidity
 from .products import Products
 from .role_menu import RoleMenu
 from .role_product import RoleProduct
+from .roles import Roles
 from .subcategories import Subcategories
 from .users import Users
 from .variant import Variant
