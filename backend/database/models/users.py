@@ -11,7 +11,7 @@ class Users(Model):
 
     username = fields.CharField(30, unique=True)
     password = fields.TextField()
-    role = fields.CharEnumField(Roles)
+    role = fields.ForeignKeyField("models.Roles")
 
     class Meta:
         table = "users"

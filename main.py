@@ -12,9 +12,10 @@ from loguru import logger
 
 from backend.config import Config, Session
 from backend.database import init_db
-from backend.database.models import Users
+from backend.database.models import Roles, Users
 from backend.responses.error import UnicornException
 from backend.routers import auth, products, roles, subcategories, users
+from backend.utils import Permissions
 
 FMT = "<green>[{time}]</green> | <level>{level}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
 
@@ -90,14 +91,16 @@ async def validation_exception_handler(
 # creation admin user if not exist
 @app.on_event("startup")
 async def startup_event():
-    if not await Users.filter(role="admin").exists():
+    role = await Roles.get_or_create(name="admin", permissions=Permissions.ALL)
+
+    if not await Users.filter(role=role[0]).exists():
         alphabet = string.ascii_letters + string.digits
         password = "".join(secrets.choice(alphabet) for _ in range(8))
 
         ph = PasswordHasher()
 
-        await Users(
-            username="admin", password=ph.hash(password), role="admin"
-        ).save()
+        await Users.create(
+            username="admin", password=ph.hash(password), role=role[0]
+        )
 
         logger.info(f"Created the admin user with password {password}")

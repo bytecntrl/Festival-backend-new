@@ -28,9 +28,6 @@ class Config(BaseSettings):
     # look
     LOCK = Lock()
 
-    # roles
-    ROLES: list = ["sagra", "bar", "punto giovani"]
-
     class Config:
         case_sensitive = True
 
