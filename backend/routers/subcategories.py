@@ -1,7 +1,7 @@
 import math
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from tortoise.exceptions import IntegrityError
 
 from backend.database.models import Subcategories
@@ -9,10 +9,10 @@ from backend.decorators import check_role
 from backend.responses import BaseResponse
 from backend.responses.error import BadRequest, Conflict
 from backend.responses.subcategories import (
-    GetSubcategoriesResponse,
     GetSubcategoriesListResponse,
+    GetSubcategoriesResponse,
 )
-from backend.utils import Roles, TokenJwt, validate_token
+from backend.utils import Permissions, TokenJwt, validate_token
 
 router = APIRouter(prefix="/subcategories", tags=["subcategories"])
 
@@ -48,19 +48,25 @@ class AddSubcategoriesItem(BaseModel):
     name: str
     order: int
 
+    @validator("name")
+    def validate_name_length(cls, name: str):
+        if not name:
+            raise ValueError("The 'name' field can not be empty.")
+
+        if len(name) > 20:
+            raise ValueError(
+                "The 'name' field must have a maximum length of 20 characters."
+            )
+
+        return name
+
 
 # admin: add subcategory
 @router.post("/")
-@check_role(Roles.ADMIN)
+@check_role(Permissions.ALL)
 async def add_subcategory(
     item: AddSubcategoriesItem, token: TokenJwt = Depends(validate_token)
 ):
-    if not item.name:
-        raise BadRequest("Name missed")
-
-    if len(item.name) >= 20:
-        raise BadRequest("Name too long")
-
     try:
         await Subcategories(name=item.name, order=item.order).save()
     except IntegrityError:
@@ -71,7 +77,7 @@ async def add_subcategory(
 
 # admin: delete category
 @router.delete("/{subcategory_id}")
-@check_role(Roles.ADMIN)
+@check_role(Permissions.ALL)
 async def delete_subcategory(
     subcategory_id: int, token: TokenJwt = Depends(validate_token)
 ):

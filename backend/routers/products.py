@@ -4,9 +4,9 @@ from tortoise.exceptions import IntegrityError
 
 from backend.database.models import Products, Subcategories
 from backend.decorators import check_role
-from backend.responses.error import BadRequest, Conflict
-from backend.utils import Category, TokenJwt, validate_token
 from backend.responses import BaseResponse
+from backend.responses.error import BadRequest, Conflict
+from backend.utils import Category, Permissions, TokenJwt, validate_token
 
 router = APIRouter(prefix="/products", tags=["products"])
 
@@ -42,7 +42,7 @@ class AddProductItem(BaseModel):
 
 # admin: add product
 @router.post("/")
-@check_role("admin")
+@check_role(Permissions.ALL)
 async def add_product(
     item: AddProductItem, token: TokenJwt = Depends(validate_token)
 ):

@@ -22,10 +22,16 @@ from backend.responses.error import Unauthorized
 class TokenJwt:
     username: str
     role: str
+    permissions: str
     exp: int = None
 
     def to_dict(self):
-        return dict(username=self.username, role=self.role, exp=self.exp)
+        return dict(
+            username=self.username,
+            role=self.role,
+            permissions=self.permissions,
+            exp=self.exp,
+        )
 
 
 def encode_jwt(payload: TokenJwt) -> str:

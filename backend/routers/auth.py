@@ -18,7 +18,7 @@ from backend.responses.error import (
     NotFound,
     Unauthorized,
 )
-from backend.utils import TokenJwt, encode_jwt, validate_token
+from backend.utils import Permissions, TokenJwt, encode_jwt, validate_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -37,7 +37,9 @@ async def login(username: str, password: str):
     except (VerificationError, VerifyMismatchError, HashingError, InvalidHash):
         raise Unauthorized("Invalid username or password")
 
-    payload = TokenJwt(username, (await user.role).name)
+    payload = TokenJwt(
+        username, (await user.role).name, (await user.role).permissions
+    )
 
     return LoginResponse(token=encode_jwt(payload))
 
@@ -77,7 +79,7 @@ class RegisterItem(BaseModel):
 
 # admin: add new user
 @router.post("/")
-@check_role("admin")
+@check_role(Permissions.ALL)
 async def register(
     item: RegisterItem, token: TokenJwt = Depends(validate_token)
 ):
@@ -86,7 +88,7 @@ async def register(
     if not role:
         raise NotFound("Role not found.")
 
-    if role.name == "admin":
+    if role.permissions == Permissions.ALL:
         raise BadRequest("Unable to create admin user.")
 
     try:

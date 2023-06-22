@@ -1,8 +1,6 @@
 from tortoise import fields
 from tortoise.models import Model
 
-from backend.utils import Roles
-
 
 class Users(Model):
     """
@@ -17,4 +15,8 @@ class Users(Model):
         table = "users"
 
     async def to_dict(self):
-        return {"id": self.id, "username": self.username, "role": self.role}
+        return {
+            "id": self.id,
+            "username": self.username,
+            "role_id": self.role_id,
+        }

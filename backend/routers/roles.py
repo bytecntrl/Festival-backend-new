@@ -5,6 +5,7 @@ from pydantic import BaseModel, validator
 from tortoise.exceptions import IntegrityError
 
 from backend.database.models import Roles
+from backend.decorators import check_role
 from backend.responses import BaseResponse
 from backend.responses.error import Conflict, NotFound
 from backend.responses.roles import GetRolesResponse
@@ -50,6 +51,7 @@ class AddRoleItem(BaseModel):
 
 
 @router.post("/")
+@check_role(Permissions.ALL)
 async def add_role(
     item: AddRoleItem, token: TokenJwt = Depends(validate_token)
 ):
@@ -62,6 +64,7 @@ async def add_role(
 
 
 @router.delete("/{role_id}")
+@check_role(Permissions.ALL)
 async def remove_role(role_id: int, token: TokenJwt = Depends(validate_token)):
     role = await Roles.get_or_none(id=role_id)
 
