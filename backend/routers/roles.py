@@ -8,7 +8,7 @@ from backend.database.models import Roles
 from backend.decorators import check_role
 from backend.responses import BaseResponse
 from backend.responses.error import Conflict, NotFound
-from backend.responses.roles import GetRolesResponse
+from backend.responses.roles import GetRolesNameResponse, GetRolesResponse
 from backend.utils import Permissions, TokenJwt, validate_token
 
 router = APIRouter(prefix="/roles", tags=["roles"])
@@ -28,6 +28,13 @@ async def get_role(
     return GetRolesResponse(
         roles=roles_list, pages=math.ceil(await roles.count() / 10)
     )
+
+
+@router.get("/name")
+async def get_role_name(token: TokenJwt = Depends(validate_token)):
+    roles = await Roles.all().values_list("id", "name")
+
+    return GetRolesNameResponse(roles={x: y for x, y in roles})
 
 
 class AddRoleItem(BaseModel):
