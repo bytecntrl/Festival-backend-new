@@ -7,7 +7,7 @@ from tortoise.exceptions import IntegrityError
 from backend.database.models import Roles
 from backend.decorators import check_role
 from backend.responses import BaseResponse
-from backend.responses.error import Conflict, NotFound, Forbidden
+from backend.responses.error import Conflict, Forbidden, NotFound
 from backend.responses.roles import GetRolesNameResponse, GetRolesResponse
 from backend.utils import Permissions, TokenJwt, validate_token
 
@@ -34,7 +34,11 @@ async def get_role(
 
 @router.get("/name")
 async def get_role_name(token: TokenJwt = Depends(validate_token)):
-    roles = await Roles.all().values_list("id", "name")
+    roles = (
+        await Roles.all()
+        .exclude(permissions=Permissions.ALL)
+        .values_list("id", "name")
+    )
 
     return GetRolesNameResponse(roles={x: y for x, y in roles})
 
