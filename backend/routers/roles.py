@@ -7,7 +7,7 @@ from tortoise.exceptions import IntegrityError
 from backend.database.models import Roles
 from backend.decorators import check_role
 from backend.responses import BaseResponse
-from backend.responses.error import Conflict, NotFound
+from backend.responses.error import Conflict, NotFound, Forbidden
 from backend.responses.roles import GetRolesNameResponse, GetRolesResponse
 from backend.utils import Permissions, TokenJwt, validate_token
 
@@ -21,8 +21,10 @@ async def get_role(
     token: TokenJwt = Depends(validate_token),
 ):
     roles = (
-        Roles.filter(permissions=permissions) if permissions else Roles
-    ).all()
+        (Roles.filter(permissions=permissions) if permissions else Roles)
+        .all()
+        .exclude(permissions=Permissions.ALL)
+    )
     roles_list = await roles.offset((page - 1) * 10).limit(10).values()
 
     return GetRolesResponse(
@@ -42,7 +44,7 @@ class AddRoleItem(BaseModel):
     permissions: Permissions
 
     @validator("name")
-    def validate_name_length(cls, name):
+    def validate_name_length(cls, name: str):
         if not name:
             raise ValueError("The 'name' field can not be empty.")
 
@@ -52,6 +54,13 @@ class AddRoleItem(BaseModel):
             )
 
         return name
+
+    @validator("permissions")
+    def validate_permissions(cls, permissions: Permissions):
+        if permissions == Permissions.ALL:
+            raise ValueError("The 'permissions' fields can not be ALL")
+
+        return permissions
 
     class Config:
         smart_union = True
@@ -77,6 +86,9 @@ async def remove_role(role_id: int, token: TokenJwt = Depends(validate_token)):
 
     if not role:
         raise NotFound("Role not exist")
+
+    if role.permissions == Permissions.ALL:
+        raise Forbidden("You cannot delete a role with all permission")
 
     await role.delete()
 
